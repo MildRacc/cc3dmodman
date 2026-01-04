@@ -70,9 +70,6 @@ func _on_level_unloaded():
 
 ---
 
-### Mod Structure
-
-
 ## Mod Structure
 
 ### Files
@@ -98,8 +95,6 @@ func _on_level_unloaded():
 
 
 ---
-
-### Mod Lifecycle
 
 ## Mod Lifecycle
 
