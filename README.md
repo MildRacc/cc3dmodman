@@ -7,7 +7,7 @@ Simple mod manager + mod loader for Crazy Cattle 3D.
 ## Use
 1. Extract the folder anywhere.
 2. Run `cc3dmodman`.
-3. Select the Crazy Cattle 3D `.exe` when asked.
+3. Select the Crazy Cattle 3D executable when asked.
 4. Launch.
 
 ## Included mods
