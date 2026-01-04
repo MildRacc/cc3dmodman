@@ -314,7 +314,7 @@ class ModLoader:
         executable = filedialog.askopenfilename(
             title="Select Crazy Cattle 3D Executable",
             filetypes=[
-                ("Godot Executable", "*.x86_64"),
+                ("Linux Executable", "*.x86_64"),
                 ("Windows Executable", "*.exe"),
                 ("All files", "*.*")
             ],
@@ -395,13 +395,18 @@ class ModLoader:
         self.root.update()
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            modded_executable = os.path.join(tmpdir, "CrazyCattle3D_Mod.x86_64")
+            # Determine temporary executable name based on OS
+            if self.executable_path.endswith(".exe"):
+                modded_executable = os.path.join(tmpdir, "CrazyCattle3D_Mod.exe")
+            else:
+                modded_executable = os.path.join(tmpdir, "CrazyCattle3D_Mod.x86_64")
+
             modded_pck = os.path.join(tmpdir, "CrazyCattle3D_Mod.pck")
             extracted_dir = os.path.join(tmpdir, "extracted")
 
             shutil.copy(self.executable_path, modded_executable)
 
-            # Extract
+            # Extract the .pck
             self.set_status("Extracting game files...", "blue")
             self.root.update()
             subprocess.run(
@@ -409,7 +414,7 @@ class ModLoader:
                 capture_output=True
             )
 
-            # Remove compiled node.gd
+            # Remove compiled node.gd files if present
             for filename in ["node.gdc", "node.gd.remap"]:
                 filepath = os.path.join(extracted_dir, filename)
                 if os.path.exists(filepath):
@@ -420,10 +425,10 @@ class ModLoader:
             self.root.update()
             for item in os.listdir(CC3DMODMAN_DIR):
                 src = os.path.join(CC3DMODMAN_DIR, item)
+                dest = os.path.join(extracted_dir, item)
                 if os.path.isfile(src) and src.endswith(".gd"):
-                    shutil.copy(src, os.path.join(extracted_dir, item))
+                    shutil.copy(src, dest)
                 elif os.path.isdir(src):
-                    dest = os.path.join(extracted_dir, item)
                     if os.path.exists(dest):
                         shutil.rmtree(dest)
                     shutil.copytree(src, dest)
@@ -444,22 +449,27 @@ class ModLoader:
 
                 print(f"[DEBUG] Added mod: {mod.name}")
 
-            # Create new .pck
+            # Build new .pck
             self.set_status("Building modded game...", "blue")
             self.root.update()
             subprocess.run(
                 [GODOTPCKTOOL_PATH, modded_pck, "-a", "a", extracted_dir,
-                 "--remove-prefix", extracted_dir, "--set-godot-version", "4.4.1"],
+                "--remove-prefix", extracted_dir, "--set-godot-version", "4.4.1"],
                 capture_output=True
             )
 
-            # Run
+            # Launch modded game
             self.set_status(f"Running with {len(enabled_mods)} mod(s)...", "green")
             self.root.update()
             print(f"[DEBUG] Launching with {len(enabled_mods)} mods")
-            subprocess.run([modded_executable])
+
+            if modded_executable.endswith(".exe") and os.name == "nt":
+                subprocess.run(modded_executable, shell=True)
+            else:
+                subprocess.run([modded_executable])
 
             self.set_status("Game closed.", "gray")
+
 
     def run(self):
         self.root.mainloop()
