@@ -1,0 +1,108 @@
+name: build-and-package
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            exe_path: dist/cc3dmodman.exe
+            exe_name: cc3dmodman.exe
+            pyinstaller_args: --noconsole
+          - os: ubuntu-latest
+            platform: linux
+            exe_path: dist/cc3dmodman
+            exe_name: cc3dmodman
+            pyinstaller_args: ""
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyInstaller
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+
+      - name: Build cc3dmodman
+        shell: bash
+        run: |
+          set -euxo pipefail
+          pyinstaller ${{ matrix.pyinstaller_args }} --onefile --name cc3dmodman cc3dmodman.py
+
+          # Linux: ensure executable bit
+          if [ "${{ matrix.platform }}" = "linux" ]; then
+            chmod +x "${{ matrix.exe_path }}" || true
+          fi
+
+      - name: Stage package folder
+        shell: bash
+        run: |
+          set -euxo pipefail
+          PKG="cc3dmodman-${{ github.ref_name }}-${{ matrix.platform }}"
+          mkdir -p "$PKG"
+
+          # exe
+          cp -f "${{ matrix.exe_path }}" "$PKG/${{ matrix.exe_name }}"
+
+          # your shipped content (matches your tree)
+          cp -f README.md "$PKG/README.md"
+          cp -R docs "$PKG/docs"
+          cp -R mods "$PKG/mods"
+          cp -R cc3dmodman "$PKG/cc3dmodman"
+          cp -f godotpcktool "$PKG/godotpcktool"
+
+      - name: Zip
+        shell: bash
+        run: |
+          set -euxo pipefail
+          PKG="cc3dmodman-${{ github.ref_name }}-${{ matrix.platform }}"
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            7z a "${PKG}.zip" "${PKG}"
+          else
+            zip -r "${PKG}.zip" "${PKG}"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cc3dmodman-${{ github.ref_name }}-${{ matrix.platform }}
+          path: cc3dmodman-${{ github.ref_name }}-${{ matrix.platform }}.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Create GitHub Release + upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/**/cc3dmodman-*.zip
+          generate_release_notes: true
