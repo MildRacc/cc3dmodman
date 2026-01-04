@@ -16,9 +16,9 @@
 
 ### Requirements
 
-- CrazyCattle3D with mod loader installed
+- CrazyCattle3D with mod loader extracted to a folder in an arbitrary location
 - Basic GDScript knowledge
-- Mods go in `/Mods/YourModName/` relative to the CC3DModLoader executable
+- Mods go in `/mods/YourModName/` relative to the CC3DModLoader executable
 
 > **Assumed knowledge**: Familiarity with Godot nodes, scenes, signals, and the scene tree is expected. If you’re new, review Godot 4 fundamentals first.
 
@@ -70,9 +70,9 @@ func _on_level_unloaded():
 
 ---
 
-### 2️⃣ Mod Structure
+### Mod Structure
 
-```markdown
+
 ## Mod Structure
 
 ### Files
@@ -99,9 +99,8 @@ func _on_level_unloaded():
 
 ---
 
-### 3️⃣ Mod Lifecycle
+### Mod Lifecycle
 
-```markdown
 ## Mod Lifecycle
 
 > Mods load before levels exist, but interact after the level and player spawn. Most issues come from doing things at the wrong time.
@@ -415,7 +414,7 @@ Wrapper for the current level scene. Obtained via `level_loaded` signal or `API.
 
 ```gdscript
 level.node    # Node - the scene root
-level.name    # String - level name (e.g., "ireland", "uk")
+level.name    # String - level name (e.g., "ireland", "egypt")
 ```
 
 ---
