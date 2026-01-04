@@ -1,6 +1,6 @@
 # cc3dmodman (Crazy Cattle 3D Mod Manager)
 
-Simple mod manager + mod loader for Crazy Cattle 3D.
+Simple mod manager/mod loader for Crazy Cattle 3D.
 
 ![gameplay](docs/media/gameplay.gif)
 
