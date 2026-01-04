@@ -6,11 +6,20 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import zipfile
 import json
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# If frozen by PyInstaller, sys.executable points to the exe location
+try:
+    import sys
+    if getattr(sys, "frozen", False):
+        BASE_DIR = os.path.dirname(sys.executable)
+except Exception:
+    pass
 
 APP_NAME = "Crazy Cattle 3D Mod Loader"
-MODS_DIR = "mods"
-GODOTPCKTOOL_PATH = "./godotpcktool"
-CC3DMODMAN_DIR = "./cc3dmodman"
+MODS_DIR = os.path.join(BASE_DIR, "mods")
+GODOTPCKTOOL_PATH = os.path.join(BASE_DIR, "godotpcktool")
+CC3DMODMAN_DIR = os.path.join(BASE_DIR, "cc3dmodman")
 
 
 class Mod:
