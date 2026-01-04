@@ -19,7 +19,7 @@ except Exception:
 APP_NAME = "Crazy Cattle 3D Mod Loader"
 MODS_DIR = os.path.join(BASE_DIR, "mods")
 GODOTPCKTOOL_PATH = os.path.join(BASE_DIR, "godotpcktool")
-CC3DMODMAN_DIR = os.path.join(BASE_DIR, "cc3dmodman")
+CC3DMODMAN_DIR = os.path.join(BASE_DIR, "payload")
 
 
 class Mod:

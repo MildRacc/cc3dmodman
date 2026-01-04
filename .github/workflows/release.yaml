@@ -62,14 +62,14 @@ jobs:
           PKG="cc3dmodman-${{ github.ref_name }}-${{ matrix.platform }}"
           mkdir -p "$PKG"
 
-          # exe
           cp -f "${{ matrix.exe_path }}" "$PKG/${{ matrix.exe_name }}"
-
-          # your shipped content (matches your tree)
           cp -f README.md "$PKG/README.md"
           cp -R docs "$PKG/docs"
           cp -R mods "$PKG/mods"
-          cp -R cc3dmodman "$PKG/cc3dmodman"
+
+          # Avoid name collision with the executable "cc3dmodman"
+          cp -R cc3dmodman "$PKG/payload"
+
           cp -f godotpcktool "$PKG/godotpcktool"
 
       - name: Zip
