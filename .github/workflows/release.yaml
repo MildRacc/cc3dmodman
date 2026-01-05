@@ -49,8 +49,6 @@ jobs:
         run: |
           set -euxo pipefail
           pyinstaller ${{ matrix.pyinstaller_args }} --onefile --name cc3dmodman cc3dmodman.py
-
-          # Linux: ensure executable bit
           if [ "${{ matrix.platform }}" = "linux" ]; then
             chmod +x "${{ matrix.exe_path }}" || true
           fi
@@ -59,24 +57,34 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+
           PKG="cc3dmodman-${{ github.ref_name }}-${{ matrix.platform }}"
           mkdir -p "$PKG"
 
+          # main executable
           cp -f "${{ matrix.exe_path }}" "$PKG/${{ matrix.exe_name }}"
+
+          # shipped content
           cp -f README.md "$PKG/README.md"
           cp -R docs "$PKG/docs"
           cp -R mods "$PKG/mods"
+          cp -R payload "$PKG/payload"
 
-          # Avoid name collision with the executable "cc3dmodman"
-          cp -R cc3dmodman "$PKG/payload"
+          # platform-specific godotpcktool
+          mkdir -p "$PKG/tools"
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            cp -f tools/godotpcktool.exe "$PKG/tools/godotpcktool.exe"
+          else
+            cp -f tools/godotpcktool "$PKG/tools/godotpcktool"
+            chmod +x "$PKG/tools/godotpcktool" || true
+          fi
 
-          cp -f godotpcktool "$PKG/godotpcktool"
-
-      - name: Zip
+      - name: Zip package
         shell: bash
         run: |
           set -euxo pipefail
           PKG="cc3dmodman-${{ github.ref_name }}-${{ matrix.platform }}"
+
           if [ "${{ matrix.platform }}" = "windows" ]; then
             7z a "${PKG}.zip" "${PKG}"
           else
