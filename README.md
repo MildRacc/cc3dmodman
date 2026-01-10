@@ -3,6 +3,8 @@
 An **unofficial**, reversible mod manager / mod loader for Crazy Cattle 3D.  
 The first public tool that lets you load multiple mods without permanently modifying the game.
 
+(The official version of CrazyCattle3D can be found [here](https://4nn4t4t.itch.io/crazycattle3d?download))
+
 ## Community Mods
 You can share your mods or download others in the [community Discord server](https://discord.gg/RPZvdXMhGT).
 
